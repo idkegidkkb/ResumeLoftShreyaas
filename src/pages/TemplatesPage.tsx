@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -58,7 +57,7 @@ const TemplateImage = ({ src, alt }: { src: string, alt: string }) => {
 const TemplatesPage = () => {
   const navigate = useNavigate();
   const { templates, createResume } = useResume();
-  const { isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
   const [filter, setFilter] = useState<'all' | 'free' | 'premium'>('all');
   const [categoryTab, setCategoryTab] = useState('all');
@@ -80,16 +79,16 @@ const TemplatesPage = () => {
   });
 
   const handleSelectTemplate = async (templateId: string, isPro: boolean) => {
-    if (!isAuthenticated) {
+    if (!user) {
       toast({
         title: "Authentication required",
         description: "Please sign in to create a resume",
       });
-      navigate('/signup');
+      navigate('/login', { state: { from: location.pathname } });
       return;
     }
 
-    if (isPro) {
+    if (isPro && !user.profile?.is_pro) {
       toast({
         title: "Premium Template",
         description: "This template requires a Pro subscription. Check out our pricing page for more information.",
